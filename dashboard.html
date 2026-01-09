@@ -385,21 +385,21 @@
             
             console.log('First sheet:', firstSheetName, 'with', firstSheetData.length, 'rows');
 
-            // Log first few rows of first sheet for debugging
+            
             console.log('=== FIRST SHEET DATA (First 15 rows) ===');
             for (let i = 0; i < Math.min(15, firstSheetData.length); i++) {
                 console.log(`Row ${i}:`, firstSheetData[i]);
             }
             console.log('=== END FIRST SHEET DATA ===');
             
-            // Extract report details and summary metrics from first sheet
+          
             const reportDetails = extractReportDetails(firstSheetData);
             const summaryMetrics = extractSummaryMetrics(firstSheetData);
             
             console.log('Report details:', reportDetails);
             console.log('Summary metrics:', summaryMetrics);
 
-            // Add report details section
+           
             html += '<div class="report-details">';
             html += '<table>';
             const weekEnding = reportDetails.weekEnding || 'N/A';
@@ -421,13 +421,12 @@
                 console.warn('⚠ Report Period not found in Sheet 1');
             }
 
-            // Add summary metrics section
-            // Always show metrics section, even if values are 0 or not found
+            
             html += '<div class="summary-metrics">';
             html += '<h2>SUMMARY METRICS</h2>';
             html += '<div class="metrics-grid">';
             
-            // Display metrics if found, otherwise show 0
+            
             const totalLearners = summaryMetrics && summaryMetrics.totalLearners !== undefined ? summaryMetrics.totalLearners : 0;
             const batchesWithIssues = summaryMetrics && summaryMetrics.batchesWithIssues !== undefined ? summaryMetrics.batchesWithIssues : 0;
             const greenStatus = summaryMetrics && summaryMetrics.greenStatus !== undefined ? summaryMetrics.greenStatus : 0;
@@ -455,7 +454,7 @@
             html += generateTableFromData(firstSheetData);
             html += '</div>';
 
-            // Process other sheets
+            
             let sheetNumber = 2;
             for (let i = 1; i < sheetNames.length; i++) {
                 const sheetName = sheetNames[i];
@@ -500,46 +499,44 @@
                     const label = String(row[0] || '').toLowerCase().trim();
                     let value = row[1];
                     
-                    // Try to find value in different columns if column B is empty
+                   
                     if ((value === null || value === undefined || value === '') && row.length > 2) {
-                        value = row[2]; // Try column C
+                        value = row[2]; 
                     }
                     if ((value === null || value === undefined || value === '') && row.length > 3) {
-                        value = row[3]; // Try column D
+                        value = row[3]; 
                     }
                     
-                    // Format the value properly
+                    
                     let formattedValue = '';
                     if (value !== null && value !== undefined && value !== '') {
-                        // Handle date objects
+                       
                         if (value instanceof Date) {
                             formattedValue = value.toLocaleDateString();
                         } else if (typeof value === 'number') {
-                            // Check if it's an Excel date serial number (dates are typically > 1, dates start from 1/1/1900 = 1)
-                            // Excel dates are usually between 1 and ~50000 (for dates up to year 2100)
+                           
                             if (value > 1 && value < 100000) {
                                 try {
-                                    // Excel date serial number (days since 1900-01-01, but Excel incorrectly treats 1900 as leap year)
-                                    // So we need to adjust: Excel epoch is 1899-12-30
+                                    
                                     const excelEpoch = new Date(1899, 11, 30); // Month is 0-indexed, so 11 = December
                                     const jsDate = new Date(excelEpoch.getTime() + value * 86400 * 1000);
                                     formattedValue = jsDate.toLocaleDateString();
                                     console.log(`Converted Excel date serial ${value} to ${formattedValue}`);
                                 } catch (e) {
-                                    // If conversion fails, just use the number as string
+                                   
                                     formattedValue = String(value);
                                 }
                             } else {
-                                // Regular number, convert to string
+                                
                                 formattedValue = String(value);
                             }
                         } else {
-                            // Convert to string and trim
+                            
                             formattedValue = String(value).trim();
                         }
                     }
                     
-                    // Match labels flexibly
+                 
                     const labelLower = label.toLowerCase();
                     
                     if (labelLower.includes('week ending') || labelLower.includes('week ending date') || 
@@ -578,17 +575,17 @@
                     console.log(`Row ${i}:`, JSON.stringify(row));
                 }
                 
-                // Check if row has at least 2 columns
+                
                 if (row.length >= 2) {
                     const label = String(row[0] || '').toLowerCase().trim();
                     let value = row[1];
                     
-                    // Try to find value in different columns if column B is empty
+                    
                     if ((value === null || value === undefined || value === '' || value === 0) && row.length > 2) {
-                        value = row[2]; // Try column C
+                        value = row[2]; 
                     }
                     if ((value === null || value === undefined || value === '' || value === 0) && row.length > 3) {
-                        value = row[3]; // Try column D
+                        value = row[3]; 
                     }
                     
                     // Convert value to number - handle various formats
@@ -638,15 +635,14 @@
                 }
             }
             
-            // Approach 2: Look for data in a table format (maybe headers are in row 0)
-            // Check if first row might be headers and data is below
+            
             if (Object.keys(metrics).length === 0 && data.length > 1) {
                 console.log('Trying alternative approach: checking if first row is headers...');
                 const headerRow = data[0] || [];
                 for (let colIndex = 0; colIndex < headerRow.length; colIndex++) {
                     const header = String(headerRow[colIndex] || '').toLowerCase().trim();
                     if (header.includes('total') && header.includes('learner')) {
-                        // Look for value in same column, row 1
+                        
                         if (data.length > 1 && data[1][colIndex] !== undefined) {
                             const val = parseFloat(data[1][colIndex]) || 0;
                             metrics.totalLearners = val;
@@ -691,7 +687,7 @@
 
             let html = '<table class="data-table">';
             
-            // Use first row as header if it exists
+            
             if (data.length > 0) {
                 html += '<thead><tr>';
                 const headerRow = data[0];
@@ -701,7 +697,7 @@
                 html += '</tr></thead>';
             }
 
-            // Add data rows
+            
             html += '<tbody>';
             for (let i = 1; i < data.length; i++) {
                 const row = data[i];
@@ -724,7 +720,7 @@
             const reportElement = document.getElementById('reportContainer');
             
             try {
-                // Show loading message
+              
                 const originalContent = reportElement.innerHTML;
                 const loadingDiv = document.createElement('div');
                 loadingDiv.style.cssText = 'text-align: center; padding: 40px; font-size: 18px; color: #667eea;';
@@ -749,19 +745,19 @@
                 const imgData = canvas.toDataURL('image/png', 1.0);
                 const pdf = new jsPDF('p', 'mm', 'a4');
                 
-                const imgWidth = 210; // A4 width in mm
-                const pageHeight = 297; // A4 height in mm
-                const margin = 10; // margin in mm
+                const imgWidth = 210; 
+                const pageHeight = 297; 
+                const margin = 10;
                 const contentWidth = imgWidth - (2 * margin);
                 const imgHeight = (canvas.height * contentWidth) / canvas.width;
                 let heightLeft = imgHeight;
                 let position = margin;
 
-                // Add first page
+               
                 pdf.addImage(imgData, 'PNG', margin, position, contentWidth, imgHeight);
                 heightLeft -= (pageHeight - 2 * margin);
 
-                // Add additional pages if needed
+               
                 while (heightLeft > 0) {
                     position = margin - (imgHeight - heightLeft);
                     pdf.addPage();
@@ -769,7 +765,7 @@
                     heightLeft -= (pageHeight - 2 * margin);
                 }
 
-                // Generate filename with date
+                
                 const today = new Date();
                 const dateStr = today.toISOString().split('T')[0];
                 const fileName = `TechBee_Weekly_Status_Report_${dateStr}.pdf`;
@@ -781,13 +777,12 @@
             }
         }
 
-        // Load report when page loads
         window.addEventListener('DOMContentLoaded', function() {
             console.log('Dashboard page loaded');
             loadReport();
         });
         
-        // Also try on window load as fallback
+       
         window.addEventListener('load', function() {
             if (document.getElementById('reportContent').innerHTML.trim() === '<!-- Report content will be generated here -->' || 
                 document.getElementById('reportContent').innerHTML.trim() === '') {

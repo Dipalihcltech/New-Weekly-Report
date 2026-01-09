@@ -280,7 +280,7 @@ Start sharing consolidated learner-wise report	To enable stakeholders to take ne
             document.head.appendChild(script);
         }
 
-        // Check if XLSX library loaded
+        
         function checkXLSXLoaded() {
             if (typeof XLSX === 'undefined') {
                 console.error('XLSX library not available');
@@ -305,19 +305,18 @@ Start sharing consolidated learner-wise report	To enable stakeholders to take ne
 
         let selectedFile = null;
 
-        // Attach generate report button click handler
+        
         generateBtn.addEventListener('click', function(e) {
             e.preventDefault();
             console.log('Generate Report button clicked');
             generateReport();
         });
 
-        // File upload area click
+       
         fileUploadArea.addEventListener('click', () => {
             fileInput.click();
         });
 
-        // File input change
         fileInput.addEventListener('change', (e) => {
             if (e.target.files && e.target.files.length > 0) {
                 selectedFile = e.target.files[0];
@@ -484,12 +483,11 @@ Start sharing consolidated learner-wise report	To enable stakeholders to take ne
                     console.log('Data stored successfully. Timestamp:', reportData.timestamp);
                     console.log(`✓ Processed ${workbook.SheetNames.length} worksheet(s) with latest data`);
                     
-                    // Show success message before redirect
                     showSuccess(`✓ Successfully processed ${workbook.SheetNames.length} worksheet(s)! Redirecting to dashboard...`);
                     
-                    // Small delay to show success message
+                    
                     setTimeout(() => {
-                        // Redirect to dashboard
+                       
                         window.location.href = 'dashboard.html';
                     }, 500);
                 } catch (error) {
