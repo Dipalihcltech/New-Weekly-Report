@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechBee Weekly Status Report - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .header {
+            background: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .header > div:first-child {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 24px;
+        }
+
+        .title-blue-box {
+            background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .title-blue-box h1 {
+            color: white;
+            font-size: 24px;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .title-blue-box .main-title {
+            text-align: center;
+            color: white;
+            font-size: 28px;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .btn-download {
+            background: #2196F3;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn-back {
+            background: #6c757d;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-right: 10px;
+        }
+
+        .btn-back:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .report-container {
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .report-title {
+            text-align: center;
+            color: #333;
+            font-size: 28px;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        .report-details {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .report-details table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .report-details td {
+            padding: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .report-details td:first-child {
+            font-weight: 600;
+            width: 200px;
+            color: #495057;
+        }
+
+        .summary-metrics {
+            margin: 30px 0;
+        }
+
+        .summary-metrics h2 {
+            color: #333;
+            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .metric-card.green {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+        }
+
+        .metric-card.amber {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .metric-card.red {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .metric-label {
+            font-size: 14px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+        }
+
+        .metric-value {
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .sheet-section {
+            margin: 40px 0;
+            page-break-inside: avoid;
+        }
+
+        .sheet-title {
+            color: #333;
+            font-size: 22px;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+            font-weight: 600;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        .data-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #5568d3;
+        }
+
+        .data-table td {
+            padding: 10px;
+            border: 1px solid #dee2e6;
+        }
+
+        .data-table tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+
+        .data-table tr:hover {
+            background: #e9ecef;
+        }
+
+        .no-data {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading-message {
+            text-align: center;
+            padding: 40px;
+            color: #667eea;
+            font-size: 18px;
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media print {
+            .header {
+                display: none;
+            }
+            
+            body {
+                background: white;
+                padding: 0;
+            }
+            
+            .report-container {
+                box-shadow: none;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="title-blue-box">
+            <h1>TechBee Weekly Status Report</h1>
+        </div>
+        <div>
+            <button class="btn-back" onclick="goBack()">← Back to Admin</button>
+            <button class="btn-back" onclick="refreshReport()" style="background: #28a745;">🔄 Refresh Data</button>
+            <button class="btn-download" onclick="downloadPDF()">Download PDF</button>
+        </div>
+    </div>
+
+    <div style="background: #e7f3ff; border-left: 4px solid #2196F3; padding: 12px 20px; margin: 0 20px 20px 20px; border-radius: 5px; color: #0c5460;">
+        <strong>ℹ️ Note:</strong> To see updates from your Excel file, go back to Admin page, re-select your updated Excel file, and click "GENERATE REPORT" again. <strong>All worksheets are read fresh each time you generate a report.</strong>
+    </div>
+
+    <div class="report-container" id="reportContainer">
+        <div id="reportContent">
+            <div class="loading-message">
+                <div class="loading-spinner"></div>
+                <div>Loading report...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        let reportData = null;
+
+        function goBack() {
+            window.location.href = 'admin.html';
+        }
+
+        function refreshReport() {
+            console.log('Refreshing report...');
+            // Clear and reload
+            sessionStorage.removeItem('reportData');
+            alert('Report data cleared.\n\nTo see your updated Excel data:\n1. Go back to Admin page\n2. Re-select your updated Excel file\n3. Click "GENERATE REPORT"\n\nNote: You must re-upload the file after making changes to see updates.');
+            goBack();
+        }
+
+        function loadReport() {
+            console.log('Loading report...');
+            const reportContent = document.getElementById('reportContent');
+            
+            // Show loading state
+            reportContent.innerHTML = '<div class="loading-message"><div class="loading-spinner"></div><div>Loading report...</div></div>';
+            
+            const storedData = sessionStorage.getItem('reportData');
+            
+            if (!storedData) {
+                console.error('No report data found in sessionStorage');
+                reportContent.innerHTML = 
+                    '<div class="error-message"><strong>No report data found.</strong><br><br>Please go back to the admin page and generate a report first.<br><br><button class="btn-back" onclick="goBack()" style="margin-top: 15px;">← Back to Admin</button></div>';
+                return;
+            }
+
+            try {
+                console.log('Parsing report data...');
+                reportData = JSON.parse(storedData);
+                console.log('Report data loaded:', {
+                    sheetNames: reportData.sheetNames,
+                    sheetCount: reportData.sheetNames ? reportData.sheetNames.length : 0,
+                    hasWorkbookJson: !!reportData.workbookJson
+                });
+                
+                if (!reportData.workbookJson || !reportData.sheetNames) {
+                    throw new Error('Invalid report data structure');
+                }
+                
+                generateReportHTML();
+            } catch (error) {
+                console.error('Error loading report:', error);
+                document.getElementById('reportContent').innerHTML = 
+                    '<div class="error-message">Error loading report data: ' + error.message + '<br><br>Please check the browser console for more details.</div>';
+            }
+        }
+
+        function generateReportHTML() {
+            console.log('Generating report HTML...');
+            const { workbookJson, sheetNames, actions, fileName } = reportData;
+            
+            if (!sheetNames || sheetNames.length === 0) {
+                console.error('No sheets found');
+                document.getElementById('reportContent').innerHTML = 
+                    '<div class="error-message">No sheets found in the Excel file.</div>';
+                return;
+            }
+
+            console.log('Processing', sheetNames.length, 'sheets');
+
+            let html = '<div class="title-blue-box"><div class="main-title">Career Shaper™ Comprehensive TechBee Weekly Status Update</div></div>';
+
+            // Process first sheet for report details and summary metrics
+            const firstSheetName = sheetNames[0];
+            const firstSheetData = workbookJson[firstSheetName] || [];
+            
+            console.log('First sheet:', firstSheetName, 'with', firstSheetData.length, 'rows');
+
+            
+            console.log('=== FIRST SHEET DATA (First 15 rows) ===');
+            for (let i = 0; i < Math.min(15, firstSheetData.length); i++) {
+                console.log(`Row ${i}:`, firstSheetData[i]);
+            }
+            console.log('=== END FIRST SHEET DATA ===');
+            
+          
+            const reportDetails = extractReportDetails(firstSheetData);
+            const summaryMetrics = extractSummaryMetrics(firstSheetData);
+            
+            console.log('Report details:', reportDetails);
+            console.log('Summary metrics:', summaryMetrics);
+
+           
+            html += '<div class="report-details">';
+            html += '<table>';
+            const weekEnding = reportDetails.weekEnding || 'N/A';
+            const reportPeriod = reportDetails.reportPeriod || 'N/A';
+            html += `<tr><td>Week Ending Date</td><td>${weekEnding}</td></tr>`;
+            html += `<tr><td>Report Period</td><td>${reportPeriod}</td></tr>`;
+            html += '</table>';
+            html += '</div>';
+            
+            // Log what was found
+            if (weekEnding !== 'N/A') {
+                console.log('✓ Week Ending Date displayed:', weekEnding);
+            } else {
+                console.warn('⚠ Week Ending Date not found in Sheet 1');
+            }
+            if (reportPeriod !== 'N/A') {
+                console.log('✓ Report Period displayed:', reportPeriod);
+            } else {
+                console.warn('⚠ Report Period not found in Sheet 1');
+            }
+
+            
+            html += '<div class="summary-metrics">';
+            html += '<h2>SUMMARY METRICS</h2>';
+            html += '<div class="metrics-grid">';
+            
+            
+            const totalLearners = summaryMetrics && summaryMetrics.totalLearners !== undefined ? summaryMetrics.totalLearners : 0;
+            const batchesWithIssues = summaryMetrics && summaryMetrics.batchesWithIssues !== undefined ? summaryMetrics.batchesWithIssues : 0;
+            const greenStatus = summaryMetrics && summaryMetrics.greenStatus !== undefined ? summaryMetrics.greenStatus : 0;
+            const amberStatus = summaryMetrics && summaryMetrics.amberStatus !== undefined ? summaryMetrics.amberStatus : 0;
+            const redStatus = summaryMetrics && summaryMetrics.redStatus !== undefined ? summaryMetrics.redStatus : 0;
+            
+            html += `<div class="metric-card"><div class="metric-label">Total Learners</div><div class="metric-value">${totalLearners}</div></div>`;
+            html += `<div class="metric-card"><div class="metric-label">Batches with Issues</div><div class="metric-value">${batchesWithIssues}</div></div>`;
+            html += `<div class="metric-card green"><div class="metric-label">Green Status - On Track</div><div class="metric-value">${greenStatus}</div></div>`;
+            html += `<div class="metric-card amber"><div class="metric-label">Amber Status - At Risk</div><div class="metric-value">${amberStatus}</div></div>`;
+            html += `<div class="metric-card red"><div class="metric-label">Red Status - Critical</div><div class="metric-value">${redStatus}</div></div>`;
+            
+            html += '</div>';
+            html += '</div>';
+            
+            if (!summaryMetrics || Object.keys(summaryMetrics).length === 0) {
+                console.log('Warning: No summary metrics extracted from Sheet 1. Please check the Excel file format.');
+            }
+
+            // Always display first sheet as table (it may contain both summary and data)
+            // If summary metrics were found, we'll still show the full table
+            console.log('Displaying first sheet as table');
+            html += '<div class="sheet-section">';
+            html += `<div class="sheet-title">1. ${firstSheetName}</div>`;
+            html += generateTableFromData(firstSheetData);
+            html += '</div>';
+
+            
+            let sheetNumber = 2;
+            for (let i = 1; i < sheetNames.length; i++) {
+                const sheetName = sheetNames[i];
+                const sheetData = workbookJson[sheetName] || [];
+                
+                console.log(`Processing sheet ${i + 1}: ${sheetName} with ${sheetData.length} rows`);
+                
+                html += '<div class="sheet-section">';
+                html += `<div class="sheet-title">${sheetNumber}. ${sheetName}</div>`;
+                
+                if (sheetData.length > 0) {
+                    html += generateTableFromData(sheetData);
+                } else {
+                    html += '<div class="no-data">No data available in this sheet</div>';
+                }
+                
+                html += '</div>';
+                sheetNumber++;
+            }
+
+            console.log('Report HTML generated, updating DOM...');
+            document.getElementById('reportContent').innerHTML = html;
+            console.log('Report displayed successfully');
+        }
+
+        function extractReportDetails(data) {
+            const details = {};
+            
+            console.log('=== EXTRACTING REPORT DETAILS ===');
+            
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
+                if (!row || row.length === 0) continue;
+                
+                // Log rows that might contain report details
+                const firstCell = String(row[0] || '').toLowerCase().trim();
+                if (firstCell && (firstCell.includes('week') || firstCell.includes('report') || firstCell.includes('period') || firstCell.includes('date'))) {
+                    console.log(`Report detail row ${i}:`, JSON.stringify(row));
+                }
+                
+                if (row.length >= 2) {
+                    const label = String(row[0] || '').toLowerCase().trim();
+                    let value = row[1];
+                    
+                   
+                    if ((value === null || value === undefined || value === '') && row.length > 2) {
+                        value = row[2]; 
+                    }
+                    if ((value === null || value === undefined || value === '') && row.length > 3) {
+                        value = row[3]; 
+                    }
+                    
+                    
+                    let formattedValue = '';
+                    if (value !== null && value !== undefined && value !== '') {
+                       
+                        if (value instanceof Date) {
+                            formattedValue = value.toLocaleDateString();
+                        } else if (typeof value === 'number') {
+                           
+                            if (value > 1 && value < 100000) {
+                                try {
+                                    
+                                    const excelEpoch = new Date(1899, 11, 30); // Month is 0-indexed, so 11 = December
+                                    const jsDate = new Date(excelEpoch.getTime() + value * 86400 * 1000);
+                                    formattedValue = jsDate.toLocaleDateString();
+                                    console.log(`Converted Excel date serial ${value} to ${formattedValue}`);
+                                } catch (e) {
+                                   
+                                    formattedValue = String(value);
+                                }
+                            } else {
+                                
+                                formattedValue = String(value);
+                            }
+                        } else {
+                            
+                            formattedValue = String(value).trim();
+                        }
+                    }
+                    
+                 
+                    const labelLower = label.toLowerCase();
+                    
+                    if (labelLower.includes('week ending') || labelLower.includes('week ending date') || 
+                        labelLower === 'week ending' || labelLower === 'week ending date') {
+                        details.weekEnding = formattedValue;
+                        console.log(`✓ Found Week Ending Date: "${row[0]}" = "${value}" -> "${formattedValue}"`);
+                    } else if (labelLower.includes('report period') || labelLower === 'report period') {
+                        details.reportPeriod = formattedValue;
+                        console.log(`✓ Found Report Period: "${row[0]}" = "${value}" -> "${formattedValue}"`);
+                    }
+                }
+            }
+            
+            console.log('=== EXTRACTED REPORT DETAILS ===', details);
+            return details;
+        }
+
+        function extractSummaryMetrics(data) {
+            const metrics = {};
+            
+            console.log('=== EXTRACTING SUMMARY METRICS ===');
+            console.log('Full data array:', data);
+            console.log('Data length:', data.length);
+            
+            // Try multiple approaches to find the data
+            // Approach 1: Look for label-value pairs in columns A-B (most common format)
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
+                if (!row || row.length === 0) continue;
+                
+                // Log all rows that might contain metrics
+                const firstCell = String(row[0] || '').toLowerCase().trim();
+                if (firstCell && (firstCell.includes('total') || firstCell.includes('batch') || 
+                    firstCell.includes('green') || firstCell.includes('amber') || firstCell.includes('red') ||
+                    firstCell.includes('learner') || firstCell.includes('issue') || firstCell.includes('status'))) {
+                    console.log(`Row ${i}:`, JSON.stringify(row));
+                }
+                
+                
+                if (row.length >= 2) {
+                    const label = String(row[0] || '').toLowerCase().trim();
+                    let value = row[1];
+                    
+                    
+                    if ((value === null || value === undefined || value === '' || value === 0) && row.length > 2) {
+                        value = row[2]; 
+                    }
+                    if ((value === null || value === undefined || value === '' || value === 0) && row.length > 3) {
+                        value = row[3]; 
+                    }
+                    
+                    // Convert value to number - handle various formats
+                    let numValue = null;
+                    if (typeof value === 'number') {
+                        numValue = value;
+                    } else if (value !== null && value !== undefined && value !== '') {
+                        // Try to extract number from string
+                        const strValue = String(value).trim();
+                        if (strValue !== '') {
+                            // Remove any non-numeric characters except decimal point and minus
+                            const cleaned = strValue.replace(/[^\d.-]/g, '');
+                            if (cleaned !== '') {
+                                numValue = parseFloat(cleaned);
+                            }
+                            // If that didn't work, try direct parse
+                            if (isNaN(numValue)) {
+                                numValue = parseFloat(strValue);
+                            }
+                        }
+                    }
+                    
+                    // Match labels more flexibly - check for partial matches
+                    const labelLower = label.toLowerCase();
+                    
+                    if ((labelLower.includes('total') && labelLower.includes('learner')) || 
+                        labelLower === 'total learners' || labelLower.startsWith('total learner')) {
+                        metrics.totalLearners = (numValue !== null && !isNaN(numValue)) ? numValue : 0;
+                        console.log(`✓ Found Total Learners: "${row[0]}" = "${value}" (${typeof value}) -> ${metrics.totalLearners}`);
+                    } else if ((labelLower.includes('batch') && labelLower.includes('issue')) || 
+                               labelLower.includes('batches with issue')) {
+                        metrics.batchesWithIssues = (numValue !== null && !isNaN(numValue)) ? numValue : 0;
+                        console.log(`✓ Found Batches with Issues: "${row[0]}" = "${value}" (${typeof value}) -> ${metrics.batchesWithIssues}`);
+                    } else if ((labelLower.includes('green') && (labelLower.includes('track') || labelLower.includes('status') || labelLower.includes('on track'))) || 
+                               labelLower === 'green status-on track' || labelLower.includes('green status')) {
+                        metrics.greenStatus = (numValue !== null && !isNaN(numValue)) ? numValue : 0;
+                        console.log(`✓ Found Green Status: "${row[0]}" = "${value}" (${typeof value}) -> ${metrics.greenStatus}`);
+                    } else if ((labelLower.includes('amber') && (labelLower.includes('risk') || labelLower.includes('status') || labelLower.includes('at risk'))) || 
+                               labelLower === 'amber status-at risk' || labelLower.includes('amber status')) {
+                        metrics.amberStatus = (numValue !== null && !isNaN(numValue)) ? numValue : 0;
+                        console.log(`✓ Found Amber Status: "${row[0]}" = "${value}" (${typeof value}) -> ${metrics.amberStatus}`);
+                    } else if ((labelLower.includes('red') && (labelLower.includes('critical') || labelLower.includes('status'))) || 
+                               labelLower === 'red status-critical' || labelLower.includes('red status')) {
+                        metrics.redStatus = (numValue !== null && !isNaN(numValue)) ? numValue : 0;
+                        console.log(`✓ Found Red Status: "${row[0]}" = "${value}" (${typeof value}) -> ${metrics.redStatus}`);
+                    }
+                }
+            }
+            
+            
+            if (Object.keys(metrics).length === 0 && data.length > 1) {
+                console.log('Trying alternative approach: checking if first row is headers...');
+                const headerRow = data[0] || [];
+                for (let colIndex = 0; colIndex < headerRow.length; colIndex++) {
+                    const header = String(headerRow[colIndex] || '').toLowerCase().trim();
+                    if (header.includes('total') && header.includes('learner')) {
+                        
+                        if (data.length > 1 && data[1][colIndex] !== undefined) {
+                            const val = parseFloat(data[1][colIndex]) || 0;
+                            metrics.totalLearners = val;
+                            console.log(`✓ Found Total Learners (table format): ${val}`);
+                        }
+                    } else if (header.includes('batch') && header.includes('issue')) {
+                        if (data.length > 1 && data[1][colIndex] !== undefined) {
+                            const val = parseFloat(data[1][colIndex]) || 0;
+                            metrics.batchesWithIssues = val;
+                            console.log(`✓ Found Batches with Issues (table format): ${val}`);
+                        }
+                    } else if (header.includes('green') && (header.includes('track') || header.includes('status'))) {
+                        if (data.length > 1 && data[1][colIndex] !== undefined) {
+                            const val = parseFloat(data[1][colIndex]) || 0;
+                            metrics.greenStatus = val;
+                            console.log(`✓ Found Green Status (table format): ${val}`);
+                        }
+                    } else if (header.includes('amber') && (header.includes('risk') || header.includes('status'))) {
+                        if (data.length > 1 && data[1][colIndex] !== undefined) {
+                            const val = parseFloat(data[1][colIndex]) || 0;
+                            metrics.amberStatus = val;
+                            console.log(`✓ Found Amber Status (table format): ${val}`);
+                        }
+                    } else if (header.includes('red') && (header.includes('critical') || header.includes('status'))) {
+                        if (data.length > 1 && data[1][colIndex] !== undefined) {
+                            const val = parseFloat(data[1][colIndex]) || 0;
+                            metrics.redStatus = val;
+                            console.log(`✓ Found Red Status (table format): ${val}`);
+                        }
+                    }
+                }
+            }
+            
+            console.log('=== FINAL EXTRACTED METRICS ===', metrics);
+            return Object.keys(metrics).length > 0 ? metrics : null;
+        }
+
+        function generateTableFromData(data) {
+            if (!data || data.length === 0) {
+                return '<div class="no-data">No data available</div>';
+            }
+
+            let html = '<table class="data-table">';
+            
+            
+            if (data.length > 0) {
+                html += '<thead><tr>';
+                const headerRow = data[0];
+                headerRow.forEach(cell => {
+                    html += `<th>${cell || ''}</th>`;
+                });
+                html += '</tr></thead>';
+            }
+
+            
+            html += '<tbody>';
+            for (let i = 1; i < data.length; i++) {
+                const row = data[i];
+                if (row && row.some(cell => cell !== '' && cell !== null && cell !== undefined)) {
+                    html += '<tr>';
+                    row.forEach(cell => {
+                        html += `<td>${cell !== null && cell !== undefined ? cell : ''}</td>`;
+                    });
+                    html += '</tr>';
+                }
+            }
+            html += '</tbody>';
+            html += '</table>';
+
+            return html;
+        }
+
+        async function downloadPDF() {
+            const { jsPDF } = window.jspdf;
+            const reportElement = document.getElementById('reportContainer');
+            
+            try {
+              
+                const originalContent = reportElement.innerHTML;
+                const loadingDiv = document.createElement('div');
+                loadingDiv.style.cssText = 'text-align: center; padding: 40px; font-size: 18px; color: #667eea;';
+                loadingDiv.textContent = 'Generating PDF... Please wait.';
+                reportElement.insertBefore(loadingDiv, reportElement.firstChild);
+                
+                // Use html2canvas to capture the report
+                const canvas = await html2canvas(reportElement, {
+                    scale: 2,
+                    useCORS: true,
+                    logging: false,
+                    windowWidth: reportElement.scrollWidth,
+                    windowHeight: reportElement.scrollHeight,
+                    backgroundColor: '#ffffff'
+                });
+
+                // Remove loading message
+                if (loadingDiv.parentNode) {
+                    loadingDiv.parentNode.removeChild(loadingDiv);
+                }
+
+                const imgData = canvas.toDataURL('image/png', 1.0);
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                
+                const imgWidth = 210; 
+                const pageHeight = 297; 
+                const margin = 10;
+                const contentWidth = imgWidth - (2 * margin);
+                const imgHeight = (canvas.height * contentWidth) / canvas.width;
+                let heightLeft = imgHeight;
+                let position = margin;
+
+               
+                pdf.addImage(imgData, 'PNG', margin, position, contentWidth, imgHeight);
+                heightLeft -= (pageHeight - 2 * margin);
+
+               
+                while (heightLeft > 0) {
+                    position = margin - (imgHeight - heightLeft);
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'PNG', margin, position, contentWidth, imgHeight);
+                    heightLeft -= (pageHeight - 2 * margin);
+                }
+
+                
+                const today = new Date();
+                const dateStr = today.toISOString().split('T')[0];
+                const fileName = `TechBee_Weekly_Status_Report_${dateStr}.pdf`;
+
+                pdf.save(fileName);
+            } catch (error) {
+                console.error('Error generating PDF:', error);
+                alert('Error generating PDF. Please try again. Make sure the report is fully loaded.');
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('Dashboard page loaded');
+            loadReport();
+        });
+        
+       
+        window.addEventListener('load', function() {
+            if (document.getElementById('reportContent').innerHTML.trim() === '<!-- Report content will be generated here -->' || 
+                document.getElementById('reportContent').innerHTML.trim() === '') {
+                console.log('Report not loaded yet, trying again...');
+                loadReport();
+            }
+        });
+    </script>
+</body>
+</html>
+
