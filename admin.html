@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Career Shaper™ TechBee Weekly Status Report Generator | Admin Panel v1.0</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .instruction-section {
+            margin-bottom: 25px;
+        }
+
+        .instruction-text {
+            color: #555;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .optional-badge {
+            background: #ffc107;
+            color: #333;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .file-upload-area {
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            background: #f8f9ff;
+            margin-bottom: 25px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload-area:hover {
+            border-color: #764ba2;
+            background: #f0f2ff;
+        }
+
+        .file-upload-area.dragover {
+            border-color: #764ba2;
+            background: #e8ebff;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .file-name {
+            color: #667eea;
+            font-weight: 600;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+
+        .actions-textarea {
+            width: 100%;
+            min-height: 150px;
+            padding: 15px;
+            border: 2px dotted #ccc;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            margin-bottom: 25px;
+            resize: vertical;
+        }
+
+        .actions-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .btn-clear {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #c82333;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-load {
+            background: #ff9800;
+            color: white;
+        }
+
+        .btn-load:hover {
+            background: #e68900;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+        }
+
+        .btn-generate {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-generate:hover {
+            background: #0b7dda;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(33, 150, 243, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .footer-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Career Shaper™ TechBee Weekly Status Report Generator | Admin Panel v1.0</h1>
+        
+        <div class="instruction-section">
+            <div class="instruction-text">
+                <span>Select Excel file from file explorer to generate the report.</span>
+                <span class="optional-badge">REQUIRED</span>
+            </div>
+        </div>
+
+        <div class="file-upload-area" id="fileUploadArea">
+            <div class="upload-icon">📁</div>
+            <div class="upload-text">Click to select Excel file or drag and drop</div>
+            <div class="file-name" id="fileName">No file selected</div>
+            <input type="file" id="excelFileInput" class="file-input" accept=".xlsx,.xls">
+        </div>
+
+        <div class="instruction-section">
+            <div class="instruction-text">
+                <span>Paste actions and reasons from your Actions sheet. Format: Action (tab) Reason. If left empty, default actions will be used.</span>
+                <span class="optional-badge">OPTIONAL</span>
+            </div>
+        </div>
+
+        <textarea 
+            id="actionsTextarea" 
+            class="actions-textarea" 
+            placeholder="Paste Actions data here (tab-separated values)...
+Example format: Action	Reason
+Weekly viva on every Wednesday by another trainer	To provide unbiased evaluation
+Start sharing consolidated learner-wise report	To enable stakeholders to take necessary steps"
+        ></textarea>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <div class="button-group">
+            <button class="btn btn-clear" onclick="clearAll()">CLEAR ALL DATA</button>
+            <button class="btn btn-load" onclick="loadSampleData()">LOAD SAMPLE DATA</button>
+            <button class="btn btn-generate" id="generateBtn" disabled>GENERATE REPORT</button>
+        </div>
+
+        <div class="footer">
+            <div class="footer-title">Career Shaper™ TechBee Weekly Status Report Generator | Admin Panel v1.0</div>
+            <div>For technical support, contact your administrator</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" 
+            onerror="loadXLSXFallback()"></script>
+    <script>
+        // Fallback XLSX loader
+        function loadXLSXFallback() {
+            console.log('Primary CDN failed, trying fallback...');
+            const script = document.createElement('script');
+            script.src = 'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js';
+            script.onload = function() {
+                console.log('XLSX library loaded from fallback CDN');
+                checkXLSXLoaded();
+            };
+            script.onerror = function() {
+                console.error('All CDN sources failed');
+                document.getElementById('errorMessage').textContent = 'Excel library failed to load. Please check your internet connection.';
+                document.getElementById('errorMessage').style.display = 'block';
+            };
+            document.head.appendChild(script);
+        }
+
+        // Check if XLSX library loaded
+        function checkXLSXLoaded() {
+            if (typeof XLSX === 'undefined') {
+                console.error('XLSX library not available');
+                document.getElementById('errorMessage').textContent = 'Excel library failed to load. Please check your internet connection.';
+                document.getElementById('errorMessage').style.display = 'block';
+            } else {
+                console.log('XLSX library loaded successfully');
+            }
+        }
+
+        window.addEventListener('load', function() {
+            setTimeout(checkXLSXLoaded, 1000); // Wait a bit for script to load
+        });
+
+        const fileInput = document.getElementById('excelFileInput');
+        const fileUploadArea = document.getElementById('fileUploadArea');
+        const fileName = document.getElementById('fileName');
+        const actionsTextarea = document.getElementById('actionsTextarea');
+        const generateBtn = document.getElementById('generateBtn');
+        const errorMessage = document.getElementById('errorMessage');
+        const successMessage = document.getElementById('successMessage');
+
+        let selectedFile = null;
+
+        // Attach generate report button click handler
+        generateBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            console.log('Generate Report button clicked');
+            generateReport();
+        });
+
+        // File upload area click
+        fileUploadArea.addEventListener('click', () => {
+            fileInput.click();
+        });
+
+        // File input change
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files && e.target.files.length > 0) {
+                selectedFile = e.target.files[0];
+                console.log('File selected:', selectedFile.name, 'Size:', selectedFile.size, 'bytes');
+                fileName.textContent = selectedFile.name;
+                generateBtn.disabled = false;
+                hideMessages();
+                
+                // Validate file type
+                const fileExtension = selectedFile.name.split('.').pop().toLowerCase();
+                if (fileExtension !== 'xlsx' && fileExtension !== 'xls') {
+                    showError('Please select a valid Excel file (.xlsx or .xls)');
+                    selectedFile = null;
+                    fileInput.value = '';
+                    fileName.textContent = 'No file selected';
+                    generateBtn.disabled = true;
+                }
+            } else {
+                console.log('No file selected');
+                selectedFile = null;
+                generateBtn.disabled = true;
+            }
+        });
+
+        // Drag and drop
+        fileUploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.add('dragover');
+        });
+
+        fileUploadArea.addEventListener('dragleave', () => {
+            fileUploadArea.classList.remove('dragover');
+        });
+
+        fileUploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileUploadArea.classList.remove('dragover');
+            
+            if (e.dataTransfer.files.length > 0) {
+                const file = e.dataTransfer.files[0];
+                if (file.name.endsWith('.xlsx') || file.name.endsWith('.xls')) {
+                    selectedFile = file;
+                    fileInput.files = e.dataTransfer.files;
+                    fileName.textContent = selectedFile.name;
+                    generateBtn.disabled = false;
+                    hideMessages();
+                } else {
+                    showError('Please select a valid Excel file (.xlsx or .xls)');
+                }
+            }
+        });
+
+        function clearAll() {
+            selectedFile = null;
+            fileInput.value = '';
+            fileName.textContent = 'No file selected';
+            actionsTextarea.value = '';
+            generateBtn.disabled = true;
+            hideMessages();
+        }
+
+        function loadSampleData() {
+            actionsTextarea.value = `Weekly viva on every Wednesday by another trainer	To provide unbiased evaluation
+Start sharing consolidated learner-wise report	To enable stakeholders to take necessary steps`;
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            successMessage.style.display = 'none';
+        }
+
+        function showSuccess(message) {
+            successMessage.textContent = message;
+            successMessage.style.display = 'block';
+            errorMessage.style.display = 'none';
+        }
+
+        function hideMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+
+        function generateReport() {
+            if (!selectedFile) {
+                showError('Please select an Excel file first');
+                return;
+            }
+
+            // Check if XLSX library is loaded
+            if (typeof XLSX === 'undefined') {
+                showError('Excel library not loaded. Please check your internet connection and refresh the page.');
+                console.error('XLSX library not found');
+                return;
+            }
+
+            // Show loading state
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'PROCESSING...';
+            hideMessages();
+            showSuccess('Processing Excel file... Reading all worksheets and extracting data. Please wait...');
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    console.log('File read successfully, size:', e.target.result.byteLength);
+                    const data = new Uint8Array(e.target.result);
+                    
+                    console.log('Reading workbook...');
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    if (!workbook || !workbook.SheetNames || workbook.SheetNames.length === 0) {
+                        throw new Error('No sheets found in the Excel file');
+                    }
+                    
+                    console.log('Workbook loaded with sheets:', workbook.SheetNames);
+                    
+                    // Convert workbook to JSON for storage
+                    const workbookJson = {};
+                    workbook.SheetNames.forEach(sheetName => {
+                        const worksheet = workbook.Sheets[sheetName];
+                        if (worksheet) {
+                            // Use raw option to preserve dates and numbers
+                            workbookJson[sheetName] = XLSX.utils.sheet_to_json(worksheet, { 
+                                header: 1, 
+                                defval: '',
+                                raw: false, // Convert dates to strings
+                                dateNF: 'yyyy-mm-dd' // Date format
+                            });
+                            console.log(`Sheet "${sheetName}" processed with ${workbookJson[sheetName].length} rows`);
+                            
+                            // Also try to convert Excel dates in the first sheet
+                            if (sheetName === workbook.SheetNames[0]) {
+                                workbookJson[sheetName].forEach((row, rowIndex) => {
+                                    if (row && row.length > 1) {
+                                        const label = String(row[0] || '').toLowerCase();
+                                        if (label.includes('date') || label.includes('period')) {
+                                            // Check if value is an Excel date serial number
+                                            if (typeof row[1] === 'number' && row[1] > 25569) {
+                                                const excelDate = new Date((row[1] - 25569) * 86400 * 1000);
+                                                row[1] = excelDate.toLocaleDateString();
+                                                console.log(`Converted Excel date in row ${rowIndex}: ${row[1]}`);
+                                            }
+                                        }
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    
+                    // Clear old data first
+                    sessionStorage.removeItem('reportData');
+                    
+                    const reportData = {
+                        workbookJson: workbookJson,
+                        sheetNames: workbook.SheetNames,
+                        actions: actionsTextarea.value,
+                        fileName: selectedFile.name,
+                        timestamp: new Date().toISOString() // Add timestamp to force refresh
+                    };
+                    
+                    console.log('Storing data in sessionStorage...');
+                    sessionStorage.setItem('reportData', JSON.stringify(reportData));
+                    console.log('Data stored successfully. Timestamp:', reportData.timestamp);
+                    console.log(`✓ Processed ${workbook.SheetNames.length} worksheet(s) with latest data`);
+                    
+                    // Show success message before redirect
+                    showSuccess(`✓ Successfully processed ${workbook.SheetNames.length} worksheet(s)! Redirecting to dashboard...`);
+                    
+                    // Small delay to show success message
+                    setTimeout(() => {
+                        // Redirect to dashboard
+                        window.location.href = 'dashboard.html';
+                    }, 500);
+                } catch (error) {
+                    console.error('Error processing file:', error);
+                    showError('Error reading Excel file: ' + error.message);
+                    generateBtn.disabled = false;
+                    generateBtn.textContent = 'GENERATE REPORT';
+                }
+            };
+            
+            reader.onerror = function(error) {
+                console.error('FileReader error:', error);
+                showError('Error reading file. Please try again.');
+                generateBtn.disabled = false;
+                generateBtn.textContent = 'GENERATE REPORT';
+            };
+            
+            reader.onprogress = function(e) {
+                if (e.lengthComputable) {
+                    const percentLoaded = Math.round((e.loaded / e.total) * 100);
+                    console.log('File loading progress:', percentLoaded + '%');
+                }
+            };
+            
+            console.log('Starting to read file:', selectedFile.name);
+            reader.readAsArrayBuffer(selectedFile);
+        }
+    </script>
+</body>
+</html>
+
