@@ -686,7 +686,7 @@
             return Object.keys(metrics).length > 0 ? metrics : null;
         }
 
-        function generateTableFromData(data) {
+        function generateTableFromData(data, forceHeaderRow = true) {
             if (!data || data.length === 0) {
                 return '<div class="no-data">No data available</div>';
             }
@@ -712,7 +712,7 @@
 
             let html = '<table class="data-table">';
             
-            // Create header row from first row of data
+            // Create header row from first row of data - ALWAYS treat first row as header
             if (data.length > 0) {
                 html += '<thead><tr>';
                 const headerRow = data[0];
@@ -724,7 +724,7 @@
                 html += '</tr></thead>';
             }
 
-            // Create data rows
+            // Create data rows - start from row 1 (skip header row)
             html += '<tbody>';
             for (let i = 1; i < data.length; i++) {
                 const row = data[i];
@@ -743,6 +743,7 @@
             html += '</table>';
 
             return html;
+        }
         }
 
         async function downloadPDF() {
