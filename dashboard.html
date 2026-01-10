@@ -427,12 +427,14 @@
             html += '<div class="metrics-grid">';
             
             
+            const totalBatches = summaryMetrics && summaryMetrics.totalBatches !== undefined ? summaryMetrics.totalBatches : 0;
             const totalLearners = summaryMetrics && summaryMetrics.totalLearners !== undefined ? summaryMetrics.totalLearners : 0;
             const batchesWithIssues = summaryMetrics && summaryMetrics.batchesWithIssues !== undefined ? summaryMetrics.batchesWithIssues : 0;
             const greenStatus = summaryMetrics && summaryMetrics.greenStatus !== undefined ? summaryMetrics.greenStatus : 0;
             const amberStatus = summaryMetrics && summaryMetrics.amberStatus !== undefined ? summaryMetrics.amberStatus : 0;
             const redStatus = summaryMetrics && summaryMetrics.redStatus !== undefined ? summaryMetrics.redStatus : 0;
             
+            html += `<div class="metric-card"><div class="metric-label">Total Batches</div><div class="metric-value">${totalBatches}</div></div>`;
             html += `<div class="metric-card"><div class="metric-label">Total Learners</div><div class="metric-value">${totalLearners}</div></div>`;
             html += `<div class="metric-card"><div class="metric-label">Batches with Issues</div><div class="metric-value">${batchesWithIssues}</div></div>`;
             html += `<div class="metric-card green"><div class="metric-label">Green Status - On Track</div><div class="metric-value">${greenStatus}</div></div>`;
@@ -588,7 +590,7 @@
                         value = row[3]; 
                     }
                     
-                    // Convert value to number - handle various formats
+                    
                     let numValue = null;
                     if (typeof value === 'number') {
                         numValue = value;
@@ -611,7 +613,11 @@
                     // Match labels more flexibly - check for partial matches
                     const labelLower = label.toLowerCase();
                     
-                    if ((labelLower.includes('total') && labelLower.includes('learner')) || 
+                    if ((labelLower.includes('total') && labelLower.includes('batch') && !labelLower.includes('issue')) || 
+                        labelLower === 'total batches' || labelLower.startsWith('total batch')) {
+                        metrics.totalBatches = (numValue !== null && !isNaN(numValue)) ? numValue : 0;
+                        console.log(`✓ Found Total Batches: "${row[0]}" = "${value}" (${typeof value}) -> ${metrics.totalBatches}`);
+                    } else if ((labelLower.includes('total') && labelLower.includes('learner')) || 
                         labelLower === 'total learners' || labelLower.startsWith('total learner')) {
                         metrics.totalLearners = (numValue !== null && !isNaN(numValue)) ? numValue : 0;
                         console.log(`✓ Found Total Learners: "${row[0]}" = "${value}" (${typeof value}) -> ${metrics.totalLearners}`);
