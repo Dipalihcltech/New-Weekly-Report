@@ -691,27 +691,51 @@
                 return '<div class="no-data">No data available</div>';
             }
 
+            // Find which columns have actual data (not just empty)
+            const validColumns = new Set();
+            for (let i = 0; i < data.length; i++) {
+                const row = data[i];
+                if (row) {
+                    for (let j = 0; j < row.length; j++) {
+                        const cell = row[j];
+                        if (cell !== '' && cell !== null && cell !== undefined) {
+                            validColumns.add(j);
+                        }
+                    }
+                }
+            }
+
+            // If no valid columns found, return no data message
+            if (validColumns.size === 0) {
+                return '<div class="no-data">No data available</div>';
+            }
+
             let html = '<table class="data-table">';
             
-            
+            // Create header row from first row of data
             if (data.length > 0) {
                 html += '<thead><tr>';
                 const headerRow = data[0];
-                headerRow.forEach(cell => {
-                    html += `<th>${cell || ''}</th>`;
-                });
+                // Only include columns that have data
+                for (let colIndex of validColumns) {
+                    const cell = headerRow[colIndex] || '';
+                    html += `<th>${cell}</th>`;
+                }
                 html += '</tr></thead>';
             }
 
-            
+            // Create data rows
             html += '<tbody>';
             for (let i = 1; i < data.length; i++) {
                 const row = data[i];
-                if (row && row.some(cell => cell !== '' && cell !== null && cell !== undefined)) {
+                // Only add row if it has at least one valid cell
+                if (row && Array.from(validColumns).some(colIndex => row[colIndex] !== '' && row[colIndex] !== null && row[colIndex] !== undefined)) {
                     html += '<tr>';
-                    row.forEach(cell => {
+                    // Only include columns that have data
+                    for (let colIndex of validColumns) {
+                        const cell = row[colIndex];
                         html += `<td>${cell !== null && cell !== undefined ? cell : ''}</td>`;
-                    });
+                    }
                     html += '</tr>';
                 }
             }
